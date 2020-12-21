@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html ng-app = 'quiz_app'>
+    <head>
+        <title>Quiz</title>
+        <style>
+            @font-face {
+                font-family: font_1;
+                src: url('font_1.otf');
+            }
+            @font-face {
+                font-family: font_2;
+                src: url('font_2.otf');
+            }
+            body {
+                background-color: #4d1cd3;
+                color: #ffffff;
+                padding: 120px 0px 0px 0px;
+                font-family: font_1;
+            }
+            .bar {
+                background-color: #ffffff;
+                color: #4d1cd3;
+                left: 0px;
+                top: 0px;
+                width: 100%;
+                height: 40px;
+                padding: 10px;
+                font-family: font_2;
+                font-size: 30px;
+                position: fixed;
+            }
+            .main {
+                width: 60%;
+                padding: 20px;
+                border-radius: 20px;
+                margin: auto;
+                text-align: center;
+                transition: background-image 0.3s;
+            }
+            button {
+                font-family: font_1;
+            }
+            .control {
+                background-color: #000000;
+                color: #ffffff;
+                height: 30px;
+                padding: 5px 10px 5px 10px;
+                margin: 5px;
+                border: none;
+                border-radius: 10px;
+                outline: none;
+                transition: background-color 0.3s;
+            }
+            .option {
+                height: 40px;
+                padding: 10px 20px 10px 20px;
+                margin: 5px;
+                border: none;
+                border-radius: 20px;
+                outline: none;
+                transition: background-color 0.3s;
+            }
+            .normal {
+                background-color: #7739eb;
+                color: #ffffff;
+            }
+            .normal:hover {
+                background-color: #5c24c4;
+            }
+            .normal:active {
+                background-color: #36107c;
+            }
+            .positive {
+                background-color: #1b8855;
+                color: #ffffff;
+            }
+            .negative {
+                background-color: #ca0f0f;
+                color: #ffffff;
+            }
+        </style>
+        <script src = 'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+        <script src = 'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.4/angular.min.js'></script>
+        <script src = 'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.4/angular-cookies.min.js'></script>
+        <script>
+            var quiz_app = angular.module ('quiz_app', ['ngCookies']);
+            quiz_app.controller ('quiz_ctrl', function ($scope, $http, $cookies) {
+                $scope.change_question = function (new_index) {
+                    $scope.index = new_index;
+                    $scope.active = questions [new_index];
+                    if (new_index == 1 || new_index == 2) {
+                        $scope.current = '#ffffff';
+                    } else if (new_index == 4 || new_index == 11) {
+                        $scope.current = '#aaaaaa';
+                    } else {
+                        $scope.current = '#000000';
+                    }
+                }
+                $scope.submit_answer = function (option) {
+                    for (index in $scope.active.options) {
+                        $scope.active.options [index] [1] = 'normal';
+                    }
+                    $scope.active.options [option] [1] = 'negative';
+                    $scope.active.options [$scope.active.correct] [1] = 'positive';
+                }
+                var questions = [
+                    {type: 1, content: 'Hydrochloric acid produced in our stomach helps in the digestion of food without causing any harm to the stomach. At what pH value does it cause acidity?', options: ['1.5', '2', '0', '1'], correct: 3},
+                    {type: 1, content: 'What is the pH value of soil?', options: ['5', '7', '6', '8'], correct: 2},
+                    {type: 1, content: 'When rain is accompanied by a thunderstorm, what will the pH value of the collected rain water be?', options: ['Slightly higher than when there is no thunderstorm', 'Uninfuluenced by the thunderstorm', 'Depends on the amount of dust in the air', 'Slightly lower than when there is no thunderstorm'], correct: 3},
+                    {type: 1, content: 'Why do we measure the pH alue of the sea?', options: ['It helps in corrosion research', 'It helps in agricultural activity', 'It helps in fermentation', 'It helps in sterilization'], correct: 0},
+                    {type: 1, content: 'What is the pH for the ideal growth of plants?', options: ['2 - 4', '4 - 4.5', '6 - 7', '9 - 10'], correct: 2},
+                    {type: 1, content: 'What is the pH of saliva after a meal?', options: ['4.8', '5.8', '6.8', 'Less than 4'], correct: 1},
+                    {type: 2, content: 'Write 3 characteristics of equillibria involving a physical process.'},
+                    {type: 2, content: 'Give an example for equilibrium of a homogeneous system.'},
+                    {type: 2, content: 'What are the factors affecting equilibrium?'},
+                    {type: 2, content: 'What are the limitations of the Arhenius concept?'},
+                    {type: 2, content: 'What are examples of equilibrium in everyday life?'},
+                    {type: 2, content: 'Why does gas fizz out of a soda bottle when opened?'},
+                    {type: 2, content: 'The rate of exothermic reaction increases with increasing temperature, true or false?'},
+                    {type: 2, content: 'Why is chemical equilibrium important in daily life?'}
+                ];
+                for (outer in questions) {
+                    if (questions [outer].type == 1) {
+                        for (inner in questions [outer].options) {
+                            questions [outer].options [inner] = [questions [outer].options [inner], 'normal'];
+                        }
+                    }
+                }
+                $scope.change_question (0);
+                $scope.length = questions.length;
+            });
+        </script>
+    </head>
+    <body ng-controller = 'quiz_ctrl'>
+        <div class = 'bar'>
+            <text>CHEMISTRY QUIZ</text>
+        </div>
+        <div class = 'main' style = 'background-image: url(image_{{index + 1}}.png); color: {{current}}'>
+            <h1>Question {{index + 1}}</h1>
+            <p>{{active.content}}</p>
+            <button ng-show = 'active.type == 1' ng-repeat = 'option in active.options' ng-click = 'submit_answer ($index)' class = 'option {{option [1]}}'>{{option [0]}}</button>
+            <hr>
+            <button ng-hide = 'index == 0' ng-click = 'change_question (index - 1)' class = 'control'>Previous</button>
+            <button ng-hide = 'index == length - 1' ng-click = 'change_question (index + 1)' class = 'control'>Next</button>
+        </div>
+    </body>
+</html>
